@@ -1,6 +1,7 @@
 package org.example.bootapi.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.example.bootapi.model.entity.Diary;
 import org.example.bootapi.model.form.DiaryForm;
 import org.example.bootapi.service.DiaryService;
@@ -44,10 +45,19 @@ public class DiaryController {
         Diary diary = new Diary();
         diary.setTitle(form.title());
         diary.setContent(form.content());
+        // 여기서 한 번 더 검사
+        // TIL : validation
+        // https : 인증서가 없으면 접속안됨. SSL/TLS -> 해싱.
         if (!form.file().isEmpty()) {
             String imageName = storageService.upload(form.file());
             redirectAttributes.addFlashAttribute("image", imageName);
             diary.setFilename(imageName); // 이거 빼먹지 마세요!
+        }
+        try {
+            diaryService.createDiary(diary);
+        } catch (BadRequestException e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/diary/new";
         }
         diaryService.createDiary(diary);
         return "redirect:/diary";
