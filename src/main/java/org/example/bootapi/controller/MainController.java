@@ -1,6 +1,9 @@
 package org.example.bootapi.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.example.bootapi.model.entity.Diary;
 import org.example.bootapi.model.form.DiaryForm;
+import org.example.bootapi.service.DiaryService;
 import org.example.bootapi.service.StorageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,26 +17,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController {
-    private final StorageService storageService;
 
-    public MainController(StorageService storageService) {
-        this.storageService = storageService;
-    }
+    private final StorageService storageService;
 
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("title", "카피바라!");
-        model.addAttribute("message", "즐거운 하루!");
-        model.addAttribute("form", DiaryForm.empty());
+        model.addAttribute("title", "AI 뿡다닥");
+        model.addAttribute("message", "AI 메모");
         return "index";
-    }
-
-    @PostMapping
-    public String post(DiaryForm form, RedirectAttributes redirectAttributes) throws Exception {
-        String imageName = storageService.upload(form.file());
-        redirectAttributes.addFlashAttribute("image", imageName);
-        return "redirect:/";
     }
 
     @GetMapping("/file/{filename}")
